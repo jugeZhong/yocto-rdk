@@ -1,0 +1,10 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+[remote "mirror"]
+	url = /srv/autobuilder/valkyrie.yocto.io/current_sources/tmptud_qpta
+	fetch = +refs/*:refs/*
+[remote "origin"]
+	url = https://github.com/ThomasDickey/ncurses-snapshots.git
+	fetch = +refs/*:refs/*

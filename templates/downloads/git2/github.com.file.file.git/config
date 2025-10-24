@@ -1,0 +1,10 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+[remote "mirror"]
+	url = /srv/autobuilder/valkyrie.yocto.io/current_sources/tmpsw10sicf
+	fetch = +refs/*:refs/*
+[remote "origin"]
+	url = https://github.com/file/file.git
+	fetch = +refs/*:refs/*

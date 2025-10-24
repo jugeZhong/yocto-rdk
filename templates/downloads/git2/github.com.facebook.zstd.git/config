@@ -1,0 +1,10 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+[remote "mirror"]
+	url = /srv/autobuilder/valkyrie.yocto.io/current_sources/tmpsvanj22g
+	fetch = +refs/*:refs/*
+[remote "origin"]
+	url = https://github.com/facebook/zstd.git
+	fetch = +refs/*:refs/*
