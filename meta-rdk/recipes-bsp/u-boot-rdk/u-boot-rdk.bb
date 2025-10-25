@@ -28,6 +28,7 @@ do_configure:prepend() {
     bbnote "Using external U-Boot source from: ${RDK_SDK_UBOOT_DIR}"
 
     bbnote "Configuring U-Boot with external toolchain: ${TOOLCHAIN_PREFIX}"
+	export PATH := "${EXTERNAL_TOOLCHAIN}/bin:$PATH"
     oe_runmake -C ${S} O=${UBOOT_OUTPUT_DIR} \
         ARCH=arm \
         CROSS_COMPILE=${TOOLCHAIN_PREFIX} \
