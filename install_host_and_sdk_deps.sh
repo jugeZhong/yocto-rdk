@@ -2,12 +2,6 @@
 
 set -e
 
-this_user="$(whoami)"
-if [ "${this_user}" != "root" ]; then
-	echo "[ERROR]: This script requires root privileges. Please execute it with sudo."
-	exit 1
-fi
-
 # Get Ubuntu system version
 ubuntu_version=$(grep -oP 'VERSION_ID="\K[0-9.]+' /etc/os-release | tr -d '"')
 
@@ -28,7 +22,8 @@ all_deps="${general_deps} ${build_deps} \
 # Check the version and install software dependencies accordingly
 if [[ $ubuntu_version == "22.04" ]]; then
 	echo "[INFO]: Ubuntu 22.04, installing software dependencies..."
-	apt-get install -y ${all_deps}
+	sudo apt-get update
+	sudo apt-get install -y ${all_deps}
 else
 	echo "[ERROR]: Unsupported Ubuntu version: ${ubuntu_version}"
 	exit 1

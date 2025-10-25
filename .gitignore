@@ -1,0 +1,7 @@
+templates/
+platform_source_code.tar.gz
+poky/
+meta-openembedded/
+build/
+platform_source_code.tar.gz.md5sum
+rdk-sdk/
