@@ -166,16 +166,49 @@ sdk_install() {
 sdk_install
 echo "[INFO]: Installation SDK successfully!"
 
-echo "[INFO]: Installation Yocto poky and meta-openembedded!"
-# Configuration parameters
+echo "[INFO]: Installation Yocto poky (by tag) and meta-openembedded (by branch)!"
 POKY_REPO="git://git.yoctoproject.org/poky.git"
-POKY_BRANCH="scarthgap"
+POKY_TAG="5.0.12-106-gf16cffd030"
 META_OE_REPO="git://git.openembedded.org/meta-openembedded"
 META_OE_BRANCH="scarthgap"
 
+clone_repo_by_tag() {
+    local repo_url=$1
+    local target_tag=$2
+    local target_dir=$3
 
-# Clone Git repository if not exists
-clone_repo() {
+    if [ -d "${target_dir}" ]; then
+        echo "Repository already exists: ${target_dir}"
+        echo "Updating to tag: ${target_tag}"
+        cd "${target_dir}" || { echo "Error: Failed to enter ${target_dir}"; return 1; }
+
+        if ! git fetch --tags && git checkout "${target_tag}"; then
+            echo "Error: Failed to update to tag ${target_tag}"
+            return 1
+        fi
+        cd .. || return 1
+    else
+        echo "Cloning repository: ${repo_url}"
+
+        if ! git clone "${repo_url}" "${target_dir}"; then
+            echo "Error: Failed to clone repository"
+            return 1
+        fi
+
+        cd "${target_dir}" || { echo "Error: Failed to enter ${target_dir}"; return 1; }
+        if ! git checkout "${target_tag}"; then
+            echo "Error: Failed to checkout tag ${target_tag}"
+            rm -rf "${target_dir}"
+            return 1
+        fi
+        cd .. || return 1
+    fi
+
+    echo "Repository ${target_dir} set to tag: ${target_tag}"
+    return 0
+}
+
+clone_repo_by_branch() {
     local repo_url=$1
     local branch=$2
     local target_dir=$3
@@ -196,14 +229,13 @@ clone_repo() {
     return 0
 }
 
+
 yocto_install() {
     echo "=== Yocto Repository Setup ==="
-    
-    # Clone required repositories
-    clone_repo "${POKY_REPO}" "${POKY_BRANCH}" "poky" || exit 1
-    
-    # Clone meta-openembedded
-	clone_repo "${META_OE_REPO}" "${META_OE_BRANCH}" "meta-openembedded" || exit 1
+
+    clone_repo_by_tag "${POKY_REPO}" "${POKY_TAG}" "poky" || exit 1
+
+    clone_repo_by_branch "${META_OE_REPO}" "${META_OE_BRANCH}" "meta-openembedded" || exit 1
     
     echo "=== Repository setup completed! ==="
     echo "Next steps:"
@@ -212,7 +244,7 @@ yocto_install() {
 }
 
 yocto_install
-echo "[INFO]: Installation Yocto poky and meta-openembedded successfully!"
+echo "[INFO]: Installation completed successfully!"
 
 echo "=== arm gnu toolchain Setup ==="
 TOOLCHAIN_VERSION="11.3.rel1"
