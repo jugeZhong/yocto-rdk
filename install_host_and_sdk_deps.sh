@@ -40,7 +40,7 @@ echo "[INFO]: Installation SDK!"
 # Configuration parameters
 SDK_VERSION="LNX6.1.83_PL5.1_V1.1.0"
 DOWNLOAD_BASE_URL="https://archive.d-robotics.cc/downloads/sdk"
-TARGET_DIR="rdk-sdk"
+RDK_SDK_TARGET_DIR="rdk-sdk"
 ARCHIVE_FILE="platform_source_code.tar.gz"
 MD5_FILE="${ARCHIVE_FILE}.md5sum"
 
@@ -55,7 +55,7 @@ echo "MD5 URL: ${MD5_URL}"
 # Clean up old files (but keep archive if valid)
 cleanup() {
     echo "Cleaning up old files..."
-    rm -rf "${TARGET_DIR}"
+    rm -rf "${RDK_SDK_TARGET_DIR}"
     rm -f "${MD5_FILE}"
 }
 
@@ -126,10 +126,10 @@ verify_md5() {
 
 # Extract archive
 extract_archive() {
-    echo "Extracting to directory: ${TARGET_DIR}"
-    mkdir -p "${TARGET_DIR}"
+    echo "Extracting to directory: ${RDK_SDK_TARGET_DIR}"
+    mkdir -p "${RDK_SDK_TARGET_DIR}"
     
-    if ! tar -xzf "${ARCHIVE_FILE}" -C "${TARGET_DIR}"; then
+    if ! tar -xzf "${ARCHIVE_FILE}" -C "${RDK_SDK_TARGET_DIR}"; then
         echo "Error: Extraction failed"
         return 1
     fi
@@ -168,7 +168,7 @@ sdk_install() {
     echo "Operation completed successfully!"
 }
 
-#sdk_install
+sdk_install
 echo "[INFO]: Installation SDK successfully!"
 
 echo "[INFO]: Installation Yocto poky and meta-openembedded!"
