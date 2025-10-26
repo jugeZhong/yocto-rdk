@@ -2,5 +2,6 @@ platform_source_code.tar.gz
 poky/
 meta-openembedded/
 build/
+out/
 platform_source_code.tar.gz.md5sum
-rdk-sdk/
+horizon-sdk/

@@ -35,7 +35,7 @@ echo "[INFO]: Installation SDK!"
 # Configuration parameters
 SDK_VERSION="LNX6.1.83_PL5.1_V1.1.0"
 DOWNLOAD_BASE_URL="https://archive.d-robotics.cc/downloads/sdk"
-RDK_SDK_TARGET_DIR="rdk-sdk"
+RDK_SDK_TARGET_DIR="horizon-sdk"
 ARCHIVE_FILE="platform_source_code.tar.gz"
 MD5_FILE="${ARCHIVE_FILE}.md5sum"
 
@@ -166,6 +166,54 @@ sdk_install() {
 sdk_install
 echo "[INFO]: Installation SDK successfully!"
 
+echo "=== arm gnu toolchain Setup ==="
+TOOLCHAIN_VERSION="11.3.rel1"
+ARCHITECTURE="x86_64"
+TARGET_ARCH="aarch64"
+SYSROOT="none-linux-gnu"
+TOOLCHAIN_FILE="horizon-sdk/platform_source_code/toolchain/arm-gnu-toolchain-${TOOLCHAIN_VERSION}-${ARCHITECTURE}-${TARGET_ARCH}-${SYSROOT}.tar.xz"
+
+toolchain_install() {
+	if [ -f "$TOOLCHAIN_FILE" ]; then
+		echo "Toolchain file found"
+		echo "  Version: $TOOLCHAIN_VERSION"
+		echo "  Architecture: $ARCHITECTURE -> $TARGET_ARCH"
+		echo "  System: $SYSROOT"
+		local TARGET_DIR="/opt"
+
+		sudo mkdir -p "$TARGET_DIR"
+		
+		echo "Extracting to $TARGET_DIR ..."
+		sudo tar -xf "$TOOLCHAIN_FILE" -C "$TARGET_DIR"
+		
+		if [ $? -eq 0 ]; then
+			echo "Extraction successful"
+			
+			TOOLCHAIN_DIR=$(find "$TARGET_DIR" -name "arm-gnu-toolchain-*" -type d | head -1)
+			if [ -n "$TOOLCHAIN_DIR" ]; then
+				echo "Toolchain location: $TOOLCHAIN_DIR"
+				
+				sudo chmod -R 755 "$TOOLCHAIN_DIR"
+				
+				if [ -f "$TOOLCHAIN_DIR/bin/${TARGET_ARCH}-${SYSROOT}-gcc" ]; then
+					echo "Toolchain verification successful"
+					echo "GCC version:"
+					"$TOOLCHAIN_DIR/bin/${TARGET_ARCH}-${SYSROOT}-gcc" --version | head -1
+				fi
+			fi
+		else
+			echo "Extraction failed"
+			exit 1
+		fi
+	else
+		echo "File does not exist: $TOOLCHAIN_FILE"
+		exit 1
+	fi
+}
+
+toolchain_install
+echo "=== Installation arm gnu toolchain successfully ==="
+
 echo "[INFO]: Installation Yocto poky (by tag) and meta-openembedded (by branch)!"
 POKY_REPO="git://git.yoctoproject.org/poky.git"
 POKY_TAG="5.0.12-106-gf16cffd030"
@@ -245,51 +293,3 @@ yocto_install() {
 
 yocto_install
 echo "[INFO]: Installation completed successfully!"
-
-echo "=== arm gnu toolchain Setup ==="
-TOOLCHAIN_VERSION="11.3.rel1"
-ARCHITECTURE="x86_64"
-TARGET_ARCH="aarch64"
-SYSROOT="none-linux-gnu"
-TOOLCHAIN_FILE="rdk-sdk/platform_source_code/toolchain/arm-gnu-toolchain-${TOOLCHAIN_VERSION}-${ARCHITECTURE}-${TARGET_ARCH}-${SYSROOT}.tar.xz"
-
-toolchain_install() {
-	if [ -f "$TOOLCHAIN_FILE" ]; then
-		echo "Toolchain file found"
-		echo "  Version: $TOOLCHAIN_VERSION"
-		echo "  Architecture: $ARCHITECTURE -> $TARGET_ARCH"
-		echo "  System: $SYSROOT"
-		local TARGET_DIR="/opt"
-
-		sudo mkdir -p "$TARGET_DIR"
-		
-		echo "Extracting to $TARGET_DIR ..."
-		sudo tar -xf "$TOOLCHAIN_FILE" -C "$TARGET_DIR"
-		
-		if [ $? -eq 0 ]; then
-			echo "Extraction successful"
-			
-			TOOLCHAIN_DIR=$(find "$TARGET_DIR" -name "arm-gnu-toolchain-*" -type d | head -1)
-			if [ -n "$TOOLCHAIN_DIR" ]; then
-				echo "Toolchain location: $TOOLCHAIN_DIR"
-				
-				sudo chmod -R 755 "$TOOLCHAIN_DIR"
-				
-				if [ -f "$TOOLCHAIN_DIR/bin/${TARGET_ARCH}-${SYSROOT}-gcc" ]; then
-					echo "Toolchain verification successful"
-					echo "GCC version:"
-					"$TOOLCHAIN_DIR/bin/${TARGET_ARCH}-${SYSROOT}-gcc" --version | head -1
-				fi
-			fi
-		else
-			echo "Extraction failed"
-			exit 1
-		fi
-	else
-		echo "File does not exist: $TOOLCHAIN_FILE"
-		exit 1
-	fi
-}
-
-toolchain_install
-echo "=== Installation arm gnu toolchain successfully ==="
